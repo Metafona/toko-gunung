@@ -1,0 +1,9 @@
+RewriteEngine On
+
+# Handle root path - redirect to public/index.php
+RewriteRule ^$ public/index.php [L]
+
+# Handle all other non-file/directory paths
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ public/index.php/$1 [L]
