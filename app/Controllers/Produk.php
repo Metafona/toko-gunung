@@ -4,6 +4,8 @@ namespace App\Controllers;
 
 use App\Models\ProdukModel;
 use App\Models\KategoriModel;
+use App\Models\ProductVariantModel;
+use App\Models\ReviewModel;
 
 class Produk extends BaseController
 {
@@ -80,6 +82,8 @@ class Produk extends BaseController
     public function detail($slug)
     {
         $produkModel = new ProdukModel();
+        $variantModel = new ProductVariantModel();
+        $reviewModel = new ReviewModel();
 
         $produk = $produkModel->getProductBySlug($slug);
 
@@ -87,9 +91,22 @@ class Produk extends BaseController
             throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
         }
 
+        $variants = $variantModel->getVariantsByProduct($produk['id']);
+        $reviews = $reviewModel->getReviewsByProduct($produk['id']);
+        $avgRating = $reviewModel->getAverageRating($produk['id']);
+        $ratingCount = $reviewModel->getRatingCount($produk['id']);
+
+        foreach ($reviews as &$review) {
+            $review['replies'] = $reviewModel->getReplies($review['id']);
+        }
+
         $data = [
-            'title' => $produk['name'],
-            'produk' => $produk,
+            'title'       => $produk['name'],
+            'produk'      => $produk,
+            'variants'    => $variants,
+            'reviews'     => $reviews,
+            'avgRating'   => round($avgRating, 1),
+            'ratingCount' => $ratingCount,
         ];
 
         return view('produk/detail', $data);

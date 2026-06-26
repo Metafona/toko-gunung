@@ -8,12 +8,12 @@ class ProdukModel extends Model
 {
     protected $table = 'products';
     protected $primaryKey = 'id';
-    protected $allowedFields = ['category_id', 'name', 'slug', 'description', 'price', 'image', 'badge', 'specs'];
+    protected $allowedFields = ['category_id', 'name', 'slug', 'description', 'price', 'image', 'badge', 'specs', 'brand'];
     protected $useTimestamps = true;
 
     public function getProductsWithCategory()
     {
-        return $this->select('products.*, categories.name as category_name')
+        return $this->select('products.*, categories.name as category_name, categories.slug as category_slug')
             ->join('categories', 'categories.id = products.category_id', 'left')
             ->findAll();
     }

@@ -48,7 +48,15 @@ class Produk extends BaseController
             return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
         }
 
-        $slug = url_title($this->request->getVar('name'), '-', true);
+        $slug = mb_url_title($this->request->getVar('name'), '-', true);
+
+        $image = $this->request->getVar('image_url');
+        $file = $this->request->getFile('image');
+        if ($file && $file->isValid() && !$file->hasMoved()) {
+            $newName = $file->getRandomName();
+            $file->move(FCPATH . 'uploads/products', $newName);
+            $image = base_url('uploads/products/' . $newName);
+        }
 
         $produkModel->save([
             'category_id' => $this->request->getVar('category_id'),
@@ -56,7 +64,7 @@ class Produk extends BaseController
             'slug'        => $slug . '-' . time(),
             'description' => $this->request->getVar('description'),
             'price'       => $this->request->getVar('price'),
-            'image'       => $this->request->getVar('image'),
+            'image'       => $image,
             'badge'       => $this->request->getVar('badge'),
             'specs'       => $this->request->getVar('specs'),
         ]);
@@ -94,15 +102,28 @@ class Produk extends BaseController
             return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
         }
 
-        $produkModel->update($id, [
+        $data = [
             'category_id' => $this->request->getVar('category_id'),
             'name'        => $this->request->getVar('name'),
             'description' => $this->request->getVar('description'),
             'price'       => $this->request->getVar('price'),
-            'image'       => $this->request->getVar('image'),
             'badge'       => $this->request->getVar('badge'),
             'specs'       => $this->request->getVar('specs'),
-        ]);
+        ];
+
+        $file = $this->request->getFile('image');
+        if ($file && $file->isValid() && !$file->hasMoved()) {
+            $newName = $file->getRandomName();
+            $file->move(FCPATH . 'uploads/products', $newName);
+            $data['image'] = base_url('uploads/products/' . $newName);
+        } else {
+            $imageUrl = $this->request->getVar('image_url');
+            if ($imageUrl) {
+                $data['image'] = $imageUrl;
+            }
+        }
+
+        $produkModel->update($id, $data);
 
         return redirect()->to('/admin/produk')->with('success', 'Produk berhasil diupdate');
     }

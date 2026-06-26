@@ -32,10 +32,12 @@ class Auth extends BaseController
                     'id'         => $user['id'],
                     'username'   => $user['username'],
                     'email'      => $user['email'],
+                    'avatar'     => $user['avatar'] ?? null,
                     'isLoggedIn' => true,
                 ];
                 $session->set($sessionData);
-                return redirect()->to('/');
+                $redirect = $this->request->getGet('redirect') ?? '/';
+                return redirect()->to($redirect);
             } else {
                 return redirect()->to('/login')->with('error', 'Password salah');
             }
@@ -69,10 +71,19 @@ class Auth extends BaseController
             return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
         }
 
+        $avatar = null;
+        $file = $this->request->getFile('avatar');
+        if ($file && $file->isValid() && !$file->hasMoved()) {
+            $newName = $file->getRandomName();
+            $file->move(FCPATH . 'uploads/avatars', $newName);
+            $avatar = base_url('uploads/avatars/' . $newName);
+        }
+
         $userModel->save([
             'username' => $this->request->getVar('username'),
             'email'    => $this->request->getVar('email'),
             'password' => password_hash($this->request->getVar('password'), PASSWORD_DEFAULT),
+            'avatar'   => $avatar,
         ]);
 
         return redirect()->to('/login')->with('success', 'Registrasi berhasil, silakan login');

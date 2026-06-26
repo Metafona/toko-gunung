@@ -11,8 +11,8 @@
 <h1 class="font-display-lg-mobile md:font-display-lg text-display-lg-mobile md:text-display-lg text-on-surface leading-tight">LENGKAPI PERALATAN PENDAKIANMU</h1>
 <p class="font-body-lg text-body-lg text-on-surface-variant max-w-lg">Rekayasa untuk lingkungan paling berat di Bumi. Perlengkapan presisi bagi mereka yang merasa nyaman di atas batas pepohonan.</p>
 <div class="pt-base flex flex-col sm:flex-row gap-base">
-<a href="/produk" class="inline-block bg-primary text-on-primary font-label-md px-lg py-md hover:brightness-90 transition-all uppercase tracking-widest rounded-DEFAULT text-center">Belanja Sekarang</a>
-<a href="/produk" class="inline-block border border-outline text-on-surface font-label-md px-lg py-md hover:bg-surface-container-highest transition-all uppercase tracking-widest rounded-DEFAULT text-center">Lihat Koleksi</a>
+  <a href="/produk" class="inline-block bg-accent-cta text-on-accent-cta border-3 border-on-surface font-label-md px-lg py-md hover:brightness-90 transition-all uppercase tracking-widest shadow-neubrutal">Belanja Sekarang</a>
+  <a href="/produk" class="inline-block border-3 border-on-surface text-on-surface font-label-md px-lg py-md hover:bg-surface-container-highest transition-all uppercase tracking-widest shadow-neubrutal-sm text-center">Lihat Koleksi</a>
 </div>
 </div>
 </div>

@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Models\KeranjangModel;
 use App\Models\ProdukModel;
+use App\Models\ProductVariantModel;
 
 class Keranjang extends BaseController
 {
@@ -24,24 +25,27 @@ class Keranjang extends BaseController
     public function tambah()
     {
         $keranjangModel = new KeranjangModel();
-        $produkModel = new ProdukModel();
         $userId = session()->get('id');
 
         $productId = $this->request->getPost('product_id');
+        $variantId = $this->request->getPost('variant_id');
+        $quantity = $this->request->getPost('quantity') ?? 1;
 
         $existing = $keranjangModel->where('user_id', $userId)
             ->where('product_id', $productId)
+            ->where('variant_id', $variantId)
             ->first();
 
         if ($existing) {
             $keranjangModel->update($existing['id'], [
-                'quantity' => $existing['quantity'] + ($this->request->getPost('quantity') ?? 1)
+                'quantity' => $existing['quantity'] + $quantity
             ]);
         } else {
             $keranjangModel->save([
                 'user_id'    => $userId,
                 'product_id' => $productId,
-                'quantity'   => $this->request->getPost('quantity') ?? 1,
+                'variant_id' => $variantId,
+                'quantity'   => $quantity,
             ]);
         }
 
@@ -51,6 +55,11 @@ class Keranjang extends BaseController
     public function update($id)
     {
         $keranjangModel = new KeranjangModel();
+        $item = $keranjangModel->find($id);
+        if (!$item || $item['user_id'] != session()->get('id')) {
+            return redirect()->to('/keranjang')->with('error', 'Item tidak ditemukan');
+        }
+
         $quantity = $this->request->getPost('quantity');
 
         if ($quantity > 0) {
@@ -65,6 +74,10 @@ class Keranjang extends BaseController
     public function hapus($id)
     {
         $keranjangModel = new KeranjangModel();
+        $item = $keranjangModel->find($id);
+        if (!$item || $item['user_id'] != session()->get('id')) {
+            return redirect()->to('/keranjang')->with('error', 'Item tidak ditemukan');
+        }
         $keranjangModel->delete($id);
         return redirect()->to('/keranjang')->with('success', 'Item dihapus dari keranjang');
     }

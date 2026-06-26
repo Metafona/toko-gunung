@@ -11,7 +11,8 @@ class AuthFilter implements FilterInterface
     public function before(RequestInterface $request, $arguments = null)
     {
         if (!session()->get('isLoggedIn')) {
-            return redirect()->to('/login')->with('error', 'Silakan login terlebih dahulu');
+            $redirect = $request->getUri()->getPath();
+            return redirect()->to('/login?redirect=' . urlencode($redirect))->with('error', 'Silakan login terlebih dahulu');
         }
     }
 
